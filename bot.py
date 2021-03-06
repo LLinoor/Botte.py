@@ -16,7 +16,7 @@ client = commands.Bot(command_prefix= '!')
 
 @client.event
 async def on_ready():
-    await client.change_presence(status=discord.Status.dnd, activity=discord.Game('mcow.ml/simpsons'))
+    await client.change_presence(status=discord.Status.dnd, activity=discord.Game('mcow.ml/Botte.py'))
 
 @client.command(name="covid", brief='| Provides global statistics for COVID-19', aliases=["coronavirus"]) # From https://covid19api.com : "The basic API is free to use and rate limited. Upgrade to a subscription today to get extra data and no rate limit!" (Subscriptions range from $10 to $100.)
 async def covid(ctx):

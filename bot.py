@@ -468,6 +468,12 @@ async def r6(ctx, platform, user):
         MMRAPI = API.html.find("div.trn-text--dimmed")
         MMR = MMRAPI[2].text
 
+        if(MMR == "Unranked"):
+            if(MMRAPI[1].text == "Unranked"):
+                MMR = "Unranked"
+            else:
+                MMR = "Unranked (" + MMRAPI[1].text + ")"
+
         if(isRanked == False):
             rankURL = "https://imgur.com/Ydp4OYF.png"
         elif(rank == "COPPER V"):

@@ -27,7 +27,15 @@ You can add the bot to your Discord server, however since the bot is hosted on H
 
 Invitation link : https://discord.com/oauth2/authorize?client_id=708796959628198071&scope=bot&permissions=268463126
 
-(The version already hosted is constantly updated and the requested permissions are required for the proper functioning of the commands)
+<details><summary>Hosted vs GitHub version</summary>
+<p>
+<i>If some features are reserved for the hosted version it's to not complicate the code with things that people might not use</i>
+
+- The hosted version has a Firebase database to save people's in-game username (in order to facilitate the use of !osu, !bs, ...), with that they just have to use !osu to get their stats and are not obliged to put their username anymore
+</p>
+</details>
+
+(The version already hosted is constantly updated and the requested permissions are required for the good functioning of the commands)
 
 ### By hosting the bot :
 

@@ -413,11 +413,11 @@ async def bs(ctx, *, user):
                 await ctx.send(embed=bsEmbed)
 
 @client.command(name="spam", description="!spam @user (amount of mention)", brief='| Spam an user')
-async def spam(ctx, a:str, *, repeat:int):
+async def spam(ctx, a:discord.Member, *, repeat:int):
     if(repeat <= 25):
         x = 0
         while x < repeat:
-            await ctx.send(a)
+            await ctx.send("<@" + str(a.id) + ">")
             x += 1
     else:
         await ctx.send("Please choose a number between 1 and 25 inclusive")

@@ -342,18 +342,18 @@ async def bs(ctx, *, user):
                     title = (f'{playerInfo["playerName"]}\'s Beat Saber Stats'),
                     description = f'''**Player's stats :**
 
-                    **Username** : {playerInfo["playerName"]}
-                    **World Ranking** : {rank}
-                    **Ranking {playerInfo["country"]}** : {countryRank}
-                    **Number of PPs** : {playerInfo["pp"]}
-                    **Number of ban** : {playerInfo["banned"]}
+                    **Username :** {playerInfo["playerName"]}
+                    **World Ranking :** {rank}
+                    **Ranking {playerInfo["country"]} :** {countryRank}
+                    **Number of PPs :** {playerInfo["pp"]}
+                    **Number of ban :** {playerInfo["banned"]}
 
                     **Advanced Stats :**
 
-                    **Total Score** : {totalScore}
-                    **Total Ranked Score** : {totalRankedScore}
+                    **Total Score :** {totalScore}
+                    **Total Ranked Score :** {totalRankedScore}
                     **Number of games played :** : {scoreStats["totalPlayCount"]}
-                    **Number of ranked games played** : {scoreStats["rankedPlayCount"]}
+                    **Number of ranked games played :** {scoreStats["rankedPlayCount"]}
 
                     *(source : https://scoresaber.com/u/{user})*
                     '''
@@ -468,11 +468,64 @@ async def r6(ctx, platform, user):
         MMRAPI = API.html.find("div.trn-text--dimmed")
         MMR = MMRAPI[2].text
 
+        def getRank(get_mmr):
+            if(get_mmr < 1200):
+                rank = "Copper V"
+            elif(get_mmr < 1300):
+                rank = "Copper IV"
+            elif(get_mmr < 1400):
+                rank = "Copper III"
+            elif(get_mmr < 1500):
+                rank = "Copper II"
+            elif(get_mmr < 1600):
+                rank = "Copper I"
+            elif(get_mmr < 1700):
+                rank = "Bronze V"
+            elif(get_mmr < 1800):
+                rank = "Bronze IV"
+            elif(get_mmr < 1900):
+                rank = "Bronze III"
+            elif(get_mmr < 2000):
+                rank = "Bronze II"
+            elif(get_mmr < 2100):
+                rank = "Bronze I"
+            elif(get_mmr < 2200):
+                rank = "Silver V"
+            elif(get_mmr < 2300):
+                rank = "Silver IV"
+            elif(get_mmr < 2400):
+                rank = "Silver III"
+            elif(get_mmr < 2500):
+                rank = "Silver II"
+            elif(get_mmr < 2600):
+                rank = "Silver I"
+            elif(get_mmr < 2800):
+                rank = "Gold III"
+            elif(get_mmr < 3000):
+                rank = "Gold II"
+            elif(get_mmr < 3200):
+                rank = "Gold I"
+            elif(get_mmr < 3600):
+                rank = "Platinum III"
+            elif(get_mmr < 4000):
+                rank = "Platinum II"
+            elif(get_mmr < 4400):
+                rank = "Platinum I"
+            elif(get_mmr < 5000):
+                rank = "Diamond"
+            elif(get_mmr > 5000):
+                rank = "Champion"
+            return rank
+
         if(MMR == "Unranked"):
             if(MMRAPI[1].text == "Unranked"):
                 MMR = "Unranked"
             else:
-                MMR = "Unranked (" + MMRAPI[1].text + ")"
+                MMR_get = MMRAPI[1].text
+                print(MMR_get)
+                MMR_get = MMR_get.replace(" MMR", "")
+                MMR_get = MMR_get.replace(",", "")
+                MMR = "Unranked (" + getRank(int(MMR_get)) + ")"
 
         if(isRanked == False):
             rankURL = "https://imgur.com/Ydp4OYF.png"

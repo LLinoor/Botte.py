@@ -8,6 +8,7 @@ import asyncio
 from requests_html import HTMLSession
 from dotenv import load_dotenv
 import os
+import datetime
 load_dotenv()
 discord_key = os.environ.get("discord_key")
 osu_api = os.environ.get("osu_key")
@@ -844,5 +845,241 @@ async def osu(ctx, *, id):
 async def osu_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         await ctx.send("Please use the command like this: !osu (username) (e.g : !osu Linoor)")
+
+@client.command(name="f1", brief='| F1 Statistics (!f1 drivers, last, next, teams)')
+async def f1(ctx, mode):
+    if(mode == "last" or mode == "lastest" or mode == "l"):
+        response = requests.get("http://ergast.com/api/f1/current/last/results.json")
+        response = response.json()
+        season = response["MRData"]["RaceTable"]["season"]
+        round = response["MRData"]["RaceTable"]["round"]
+        if(round == "1" or round == "21" or round == "31"):
+            round = round + "st"
+        elif(round == "2" or round == "22"):
+            round = round + "nd"
+        elif(round == "3" or round == "23"):
+            round = round + "rd"
+        else:
+            round = round + "th"
+        raceName = response["MRData"]["RaceTable"]["Races"][0]["raceName"]
+        raceURL = response["MRData"]["RaceTable"]["Races"][0]["url"]
+        date = response["MRData"]["RaceTable"]["Races"][0]["date"]
+        time = response["MRData"]["RaceTable"]["Races"][0]["time"]
+        time = time[:-1]
+        dividedDate = date.split("-")
+        dividedTime = time.split(":")
+        formattedDatetime = datetime.datetime.combine(datetime.date(int(dividedDate[0]), int(dividedDate[1]), int(dividedDate[2])), datetime.time(int(dividedTime[0]), int(dividedTime[1])))
+        formattedDatetime = formattedDatetime.strftime("%y/%m/%d at %H:%M")
+        driversList = response["MRData"]["RaceTable"]["Races"][0]["Results"]
+        familyNameList = []
+        pointsList = []
+        constructorList = []
+        statusList = []
+        for driver in driversList:
+            status = driver["status"]
+            statusList.append(status)
+            constructor = driver["Constructor"]["name"]
+            constructorList.append(constructor)
+            points = driver["points"]
+            pointsList.append(points)
+            familyName = driver["Driver"]["familyName"]
+            familyNameList.append(familyName)
+        
+        embed=discord.Embed(title=f"F1 {raceName} Results :", description = f"{season} Season, {round} Round", url=raceURL, color=0xff1100)
+        embed.set_author(name="F1 API", url="https://documenter.getpostman.com/view/11586746/SztEa7bL#intro", icon_url="https://logodownload.org/wp-content/uploads/2016/11/formula-1-logo-5-3.png")
+        embed.add_field(name="1st Place :", value=f"**{familyNameList[0]}** | {constructorList[0]} (+{pointsList[0]}P | {statusList[0]})", inline=False)
+        embed.add_field(name="2nd Place :", value=f"**{familyNameList[1]}** | {constructorList[1]} (+{pointsList[1]}P | {statusList[1]})", inline=False)
+        embed.add_field(name="3rd Place :", value=f"**{familyNameList[2]}** | {constructorList[2]} (+{pointsList[2]}P | {statusList[2]})", inline=False)
+        del constructorList[:3]
+        del familyNameList[:3]
+        del pointsList[:3]
+        del statusList[:3]
+        length = len(pointsList)
+        string = ""
+        for item in range(length):
+            addition = f"{item + 4}. {familyNameList[item]} | {constructorList[item]} (+{pointsList[item]}P | {statusList[item]}) \n "
+            string = string + addition
+        embed.add_field(name="Others Places :", value=string, inline=False)
+        embed.set_footer(text=f"{formattedDatetime} (UTC Time)")
+        await ctx.send(embed=embed)
+
+    elif(mode == "next" or mode == "qualifying" or mode == "n" or mode == "n"):
+        response = requests.get("http://ergast.com/api/f1/current.json")
+        response = response.json()
+        round = requests.get("http://ergast.com/api/f1/current/driverStandings.json")
+        round = round.json()
+        round = round["MRData"]["StandingsTable"]["StandingsLists"][0]["round"]
+        now = datetime.datetime.now()
+        if(now.strftime("%A") == "Sunday" or now.strftime("%A") == "Saturday"):
+            qualifying = requests.get(f"http://ergast.com/api/f1/2021/{str(int(round)+1)}/qualifying.json")
+            qualifying = qualifying.json()
+        else:
+            qualifying = False
+        nextGP = response["MRData"]["RaceTable"]["Races"][int(round)]
+        nextRaceName = nextGP["raceName"]
+        raceURL = nextGP["Circuit"]["url"]
+        season = nextGP["season"]
+        round = nextGP["round"]
+        if(round == "1" or round == "21" or round == "31"):
+            round = round + "st"
+        elif(round == "2" or round == "22"):
+            round = round + "nd"
+        elif(round == "3" or round == "23"):
+            round = round + "rd"
+        else:
+            round = round + "th"
+        date = nextGP["date"]
+        time = nextGP["time"]
+        dividedDate = date.split("-")
+        dividedTime = time.split(":")
+        formattedDatetime = datetime.datetime.combine(datetime.date(int(dividedDate[0]), int(dividedDate[1]), int(dividedDate[2])), datetime.time(int(dividedTime[0]), int(dividedTime[1])))
+        formattedDatetime = formattedDatetime.strftime("%y/%m/%d at %H:%M")
+        if(qualifying != False):
+            try:
+                test = qualifying["MRData"]["RaceTable"]["Races"][0]["season"]
+            except:
+                qualifying = False
+            else:
+                driversList = qualifying["MRData"]["RaceTable"]["Races"][0]["QualifyingResults"]
+                positionList = []
+                codeList = []
+                constructorList = []
+                timeList = []
+                for driver in driversList:
+                    position = driver["position"]
+                    positionList.append(position)
+                    code = driver["Driver"]["code"]
+                    codeList.append(code)
+                    constructor = driver["Constructor"]["name"]
+                    constructorList.append(constructor)
+                    if(int(position) < 10):
+                        time = driver["Q3"]
+                    elif(int(position) <= 15 and int(position) > 11):
+                        time = driver["Q2"]
+                    elif(int(position) <= 20 and int(position) > 15):
+                        time = driver["Q1"]
+                    if(time == ""):
+                        time = "n/a"
+                    timeList.append(time)
+
+        embed=discord.Embed(title=f"Next GP : {nextRaceName}", description = f"{season} Season, {round} Round", url=raceURL, color=0xff1100)
+        embed.set_author(name="F1 API", url="https://documenter.getpostman.com/view/11586746/SztEa7bL#intro", icon_url="https://logodownload.org/wp-content/uploads/2016/11/formula-1-logo-5-3.png")
+        if(qualifying == False):
+            embed.add_field(name="Qualifying", value="Qualifying has not yet started.", inline=False)
+        else:
+            embed.add_field(name="1st Place :", value=f"{positionList[0]}. {codeList[0]} | {constructorList[0]} ({timeList[0]})\n", inline=False)
+            embed.add_field(name="2nd Place :", value=f"{positionList[1]}. {codeList[1]} | {constructorList[1]} ({timeList[1]})\n", inline=False)
+            embed.add_field(name="3rd Place :", value=f"{positionList[2]}. {codeList[2]} | {constructorList[2]} ({timeList[2]})\n", inline=False)
+            del positionList[:3]
+            del codeList[:3]
+            del constructorList[:3]
+            del timeList[:3]
+            length = len(positionList)
+            string = ""
+            for item in range(length):
+                addition = f"{positionList[item]}. {codeList[item]} | {constructorList[item]} ({timeList[item]}) \n "
+                string = string + addition
+            embed.add_field(name="Others Places :", value=string, inline=False)
+        embed.set_footer(text=f"{formattedDatetime} (UTC Time)")
+        await ctx.send(embed=embed)
+
+
+    elif(mode == "drivers" or mode == "driver" or mode == "d"):
+        response = requests.get("http://ergast.com/api/f1/current/driverStandings.json")
+        response = response.json()
+        season = response["MRData"]["StandingsTable"]["StandingsLists"][0]["season"]
+        round = response["MRData"]["StandingsTable"]["StandingsLists"][0]["round"]
+        if(round == "1" or round == "21" or round == "31"):
+            round = round + "st"
+        elif(round == "2" or round == "22"):
+            round = round + "nd"
+        elif(round == "3" or round == "23"):
+            round = round + "rd"
+        else:
+            round = round + "th"
+        driversList = response["MRData"]["StandingsTable"]["StandingsLists"][0]["DriverStandings"]
+        positionList = []
+        winsList = []
+        pointsList = []
+        familyNameList = []
+        constructorList = []
+        for driver in driversList:
+            position = driver["position"]
+            positionList.append(position)
+            wins = driver["wins"]
+            winsList.append(wins)
+            points = driver["points"]
+            pointsList.append(points)
+            familyName = driver["Driver"]["familyName"]
+            familyNameList.append(familyName)
+            constructor = driver["Constructors"][0]["name"]
+            constructorList.append(constructor)
+        embed=discord.Embed(title=f"F1 Players Standing :", description = f"{season} Season, {round} Round", color=0xff1100)
+        embed.set_author(name="F1 API", url="https://documenter.getpostman.com/view/11586746/SztEa7bL#intro", icon_url="https://logodownload.org/wp-content/uploads/2016/11/formula-1-logo-5-3.png")
+        embed.add_field(name="1st Place :", value=f"**{familyNameList[0]}** | {constructorList[0]} ({pointsList[0]}P | {winsList[0]}W)", inline=False)
+        embed.add_field(name="2nd Place :", value=f"**{familyNameList[1]}** | {constructorList[1]} ({pointsList[1]}P | {winsList[1]}W)", inline=False)
+        embed.add_field(name="3rd Place :", value=f"**{familyNameList[2]}** | {constructorList[2]} ({pointsList[2]}P | {winsList[2]}W)", inline=False)
+        del constructorList[:3]
+        del familyNameList[:3]
+        del pointsList[:3]
+        del winsList[:3]
+        del positionList[:3]
+        length = len(positionList)
+        string = ""
+        for item in range(length):
+            addition = f"{positionList[item]}. {familyNameList[item]} | {constructorList[item]} ({pointsList[item]}P | {winsList[item]}W) \n "
+            string = string + addition
+        embed.add_field(name="Others Places :", value=string, inline=False)
+        now = datetime.datetime.now()
+        if(now.strftime("%A") == "Sunday"):
+            embed.set_footer(text="The standing may take several hours to update.")
+        await ctx.send(embed=embed)
+    
+    elif(mode == "teams" or mode == "team" or mode == "t"):
+        response = requests.get("http://ergast.com/api/f1/current/constructorStandings.json")
+        response = response.json()
+        season = response["MRData"]["StandingsTable"]["StandingsLists"][0]["season"]
+        round = response["MRData"]["StandingsTable"]["StandingsLists"][0]["round"]
+        if(round == "1" or round == "21" or round == "31"):
+            round = round + "st"
+        elif(round == "2" or round == "22"):
+            round = round + "nd"
+        elif(round == "3" or round == "23"):
+            round = round + "rd"
+        else:
+            round = round + "th"
+        teamsList = response["MRData"]["StandingsTable"]["StandingsLists"][0]["ConstructorStandings"]
+        positionList = []
+        winsList = []
+        pointsList = []
+        constructorList = []
+        for team in teamsList:
+            position = team["position"]
+            positionList.append(position)
+            wins = team["wins"]
+            winsList.append(wins)
+            points = team["points"]
+            pointsList.append(points)
+            constructor = team["Constructor"]["name"]
+            constructorList.append(constructor)
+        embed=discord.Embed(title=f"F1 Teams Standing :", description = f"{season} Season, {round} Round", color=0xff1100)
+        embed.set_author(name="F1 API", url="https://documenter.getpostman.com/view/11586746/SztEa7bL#intro", icon_url="https://logodownload.org/wp-content/uploads/2016/11/formula-1-logo-5-3.png")
+        embed.add_field(name="1st Place :", value=f"**{constructorList[0]}** ({pointsList[0]}P | {winsList[0]}W)", inline=False)
+        embed.add_field(name="2nd Place :", value=f"**{constructorList[1]}** ({pointsList[1]}P | {winsList[1]}W)", inline=False)
+        embed.add_field(name="3rd Place :", value=f"**{constructorList[2]}** ({pointsList[2]}P | {winsList[2]}W)", inline=False)
+        del constructorList[:3]
+        del pointsList[:3]
+        del winsList[:3]
+        del positionList[:3]
+        length = len(positionList)
+        string = ""
+        for item in range(length):
+            addition = f"{positionList[item]}. {constructorList[item]} ({pointsList[item]}P|{winsList[item]}W) \n "
+            string = string + addition
+        embed.add_field(name="Others Places :", value=string, inline=False)
+        now = datetime.datetime.now()
+        if(now.strftime("%A") == "Sunday"):
+            embed.set_footer(text="The standing may take several hours to update.")
+        await ctx.send(embed=embed)
 
 client.run(discord_key)

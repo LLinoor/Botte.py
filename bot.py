@@ -846,7 +846,7 @@ async def osu_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         await ctx.send("Please use the command like this: !osu (username) (e.g : !osu Linoor)")
 
-@client.command(name="f1", brief='| F1 Statistics (!f1 drivers, last, next, teams)')
+@client.command(name="f1", brief='| F1 Statistics (!f1 drivers, last, next, teams)', aliases=['F1'])
 async def f1(ctx, mode):
     if(mode == "last" or mode == "lastest" or mode == "l"):
         response = requests.get("http://ergast.com/api/f1/current/last/results.json")
@@ -1014,7 +1014,7 @@ async def f1(ctx, mode):
             familyNameList.append(familyName)
             constructor = driver["Constructors"][0]["name"]
             constructorList.append(constructor)
-        embed=discord.Embed(title=f"F1 Players Standing :", description = f"{season} Season, {round} Round", color=0xff1100)
+        embed=discord.Embed(title=f"F1 Drivers Standing :", description = f"{season} Season, {round} Round", color=0xff1100)
         embed.set_author(name="F1 API", url="https://documenter.getpostman.com/view/11586746/SztEa7bL#intro", icon_url="https://logodownload.org/wp-content/uploads/2016/11/formula-1-logo-5-3.png")
         embed.add_field(name="1st Place :", value=f"**{familyNameList[0]}** | {constructorList[0]} ({pointsList[0]}P | {winsList[0]}W)", inline=False)
         embed.add_field(name="2nd Place :", value=f"**{familyNameList[1]}** | {constructorList[1]} ({pointsList[1]}P | {winsList[1]}W)", inline=False)

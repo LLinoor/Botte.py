@@ -12,10 +12,11 @@ Here is a list of what the bot does:
 - Gives the R6S stats of the requested players
 - Gives the Beat Saber stats of the requested players
 - Gives the osu! stats of the requested players
-- Make heads or tails
-- Provides statistics on COVID-19
-- Delete a requested number of messages
 - Gives price of cryptocurrency
+- Gives Formula 1 results, schedule and standings
+- Gives statistics on COVID-19
+- Make heads or tails
+- Delete a requested number of messages
 
 ## Add the bot to your Discord server:
 

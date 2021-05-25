@@ -12,11 +12,13 @@ Here is a list of what the bot does:
 - Gives the R6S stats of the requested players
 - Gives the Beat Saber stats of the requested players
 - Gives the osu! stats of the requested players
-- Gives price of cryptocurrency
-- Gives Formula 1 results, schedule and standings
-- Gives statistics on COVID-19
 - Make heads or tails
+- Provides statistics on COVID-19
 - Delete a requested number of messages
+- Gives price of cryptocurrency
+
+## Command Prefix :
+Please use "?" before typing the command (ex: `?help`)
 
 ## Add the bot to your Discord server:
 
@@ -32,7 +34,7 @@ Invitation link : https://discord.com/oauth2/authorize?client_id=708796959628198
 <p>
 <i>If some features are reserved for the hosted version it's to not complicate the code with things that people might not use</i>
 
-- The hosted version has a Firebase database to save people's in-game username (in order to facilitate the use of !osu, !bs, ...), with that they just have to use !osu to get their stats and are not obliged to put their username anymore
+- The hosted version has a Firebase database to save people's in-game username (in order to facilitate the use of !osu, !bs, ...), with that they just have to use ?osu to get their stats and are not obliged to put their username anymore
 </p>
 </details>
 

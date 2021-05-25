@@ -26,7 +26,7 @@ There are several ways to add the bot to your Discord server, you can host it by
 
 ### Without hosting the bot :
 
-You can add the bot to your Discord server, however since the bot is hosted on Heroku, it will only be online 23/30 days.
+You can add the bot to your Discord server.
 
 Invitation link : https://discord.com/oauth2/authorize?client_id=708796959628198071&scope=bot&permissions=268463126
 

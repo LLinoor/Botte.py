@@ -27,7 +27,7 @@ async def covid(ctx):
     y = data["TotalDeaths"]
     z = data["TotalRecovered"]
     a = ("Total number of infected people in the world : "+"{:,}\n".format(x))
-    b = ("Total number of dead in the world: "+"{:,}\n".format(y))
+    b = ("Total number of deaths in the world: "+"{:,}\n".format(y))
     c = ("Total number of people recovered in the world: "+"{:,}\n".format(z))
     await ctx.send(a + b + c)
 
